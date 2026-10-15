@@ -1,0 +1,18 @@
+.venv/
+.DS_Store
+__pycache__/
+.pytest_cache/
+*.pyc
+.env
+*.zip
+*.patch
+
+# Runtime/project state. Do not overwrite when updating code.
+
+# Word lock files
+~$*
+# Runtime files that should not be backed up
+data/editor_exports/
+*.py[cod]
+# Temporary backups made while patching
+*.before-*

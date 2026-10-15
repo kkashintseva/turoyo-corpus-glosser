@@ -1,0 +1,256 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Turoyo Corpus Glosser</title>
+  <link rel="stylesheet" href="/static/editor.css">
+</head>
+<body>
+  <header class="bar">
+    <strong>Turoyo Corpus Glosser</strong>
+    <a href="/labels">Инвентарь глосс</a>
+    <a href="/senses">Словник</a>
+    <a href="/guide">Инструкция</a>
+<a href="/stats">Статистика</a>
+  </header>
+
+  <main class="wrap">
+    <section class="card">
+      <h2>Новый текст</h2>
+      <p class="muted">Вставьте новый текст. <b>Одна строка — один
+        интерлинейный блок</b>. В режиме FLEx-corpus известные словоформы
+        получают анализы из уже импортированного корпуса; неоднозначные
+        разборы остаются альтернативами, неизвестные слова — пустыми.</p>
+      <form id="new-doc">
+        <input name="title" placeholder="Название (необязательно)">
+        <div class="parallel">
+          <label>Текст
+            <textarea name="text" rows="8" placeholder="u b-ḏo yawmo ...&#10;qəmle gabro ..." required></textarea>
+          </label>
+          <label>Перевод по строкам
+            <textarea name="translation" rows="8" placeholder="I was born in this village.&#10;My father was in America."></textarea>
+          </label>
+        </div>
+        <button type="submit">Глоссировать</button>
+      </form>
+    </section>
+
+    <section class="card">
+      <h2>Лексикон FieldWorks (LIFT)</h2>
+      <p class="muted">Файл <code>.lift</code> становится основным словарём:
+        каждая FieldWorks-entry остаётся отдельной, её варианты формы ведут в ту
+        же entry, а <code>grammatical-info</code> (например <b>Preterite</b>,
+        <b>Infectum</b>, <b>Imperative</b>) сохраняется как часть конкретного
+        словарного анализа. Файл <code>.lift-ranges</code> можно приложить вместе
+        с ним. Локальные новые слова и значения не стираются при повторном импорте.</p>
+      <form id="import-lift">
+        <label>LIFT
+          <input type="file" name="file" accept=".lift,application/xml,text/xml" required>
+        </label>
+        <label>ranges (необязательно)
+          <input type="file" name="ranges" accept=".lift-ranges,.xml,application/xml,text/xml">
+        </label>
+        <button type="submit">Импортировать лексикон</button>
+      </form>
+      <p class="muted" id="import-lift-status"></p>
+    </section>
+
+    <section class="card">
+      <h2>Импорт корпуса FLEx</h2>
+      <p class="muted">Файл <code>.flextext</code> / XML. Импортируются все
+        <code>&lt;interlinear-text&gt;</code>: каждый текст становится редактируемой
+        сессией, а подтверждённые разборы пополняют corpus-based parser.
+        Исходный XML архивируется без изменений. До 100 МБ.</p>
+      <form id="import-flextext">
+        <input type="file" name="file" accept=".flextext,.xml,text/xml,application/xml" required>
+        <button type="submit">Импортировать FLEx</button>
+      </form>
+      <p class="muted" id="import-flextext-status"></p>
+    </section>
+
+    <section class="card">
+      <h2>Импорт DOCX с готовой разметкой</h2>
+      <p class="muted">Документ, где часть строк уже размечена вручную
+        (IGT) — неразмеченные строки доглоссирует программа. До 25 МБ.</p>
+      <form id="import-docx">
+        <input type="file" name="file" accept=".docx" required>
+        <button type="submit">Импортировать</button>
+      </form>
+      <p class="muted" id="import-docx-status"></p>
+    </section>
+
+    <section class="card">
+      <h2>Сохранённые сессии</h2>
+      {% if documents %}
+      <ul class="doclist" id="saved-sessions">
+        {% for doc in documents %}
+        <li data-id="{{ doc.document_id }}">
+          <a href="/doc/{{ doc.document_id }}">{{ doc.title }}</a>
+          <span class="chips">
+            <span class="chip green">{{ doc.counts.confident }}</span>
+            <span class="chip yellow">{{ doc.counts.uncertain }}</span>
+            <span class="chip red">{{ doc.counts.unresolved }}</span>
+          </span>
+          <span class="muted">{{ doc.updated }}</span>
+          {% if doc.holder_name %}
+          <span class="muted">🔒 редактирует {{ doc.holder_name }}</span>
+          {% endif %}
+          <span class="doc-actions">
+            <a href="#" data-act="rename">переименовать</a>
+            <a href="#" data-act="delete">удалить</a>
+          </span>
+        </li>
+        {% endfor %}
+      </ul>
+      {% else %}
+      <p class="muted">Пока ничего нет.</p>
+      {% endif %}
+    </section>
+  </main>
+
+  <script>
+  document.getElementById('new-doc').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const f = e.target;
+    const res = await fetch('/api/documents', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        text: f.text.value, title: f.title.value, translation: f.translation.value,
+      }),
+    });
+    const data = await res.json();
+    window.location = '/doc/' + data.document_id;
+  });
+
+  document.getElementById('import-flextext').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const f = e.target;
+    const status = document.getElementById('import-flextext-status');
+    const file = f.file.files[0];
+    if (!file) return;
+    const MAX_BYTES = 100 * 1024 * 1024;
+    if (file.size > MAX_BYTES) {
+      status.textContent = 'Файл больше 100 МБ.';
+      return;
+    }
+    status.textContent = 'Импортирую FLEx-корпус…';
+    const body = new FormData();
+    body.append('file', file);
+    const res = await fetch('/api/documents/upload-flextext', { method: 'POST', body });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      status.textContent = 'Ошибка: ' + (err.detail || res.statusText);
+      return;
+    }
+    const data = await res.json();
+    const r = data.report || {};
+    const first = data.first_document_id;
+    status.innerHTML = `текстов: ${r.texts ?? 0}, сегментов: ${r.segments ?? 0}, ` +
+      `слов: ${r.tokens ?? 0}, с анализом: ${r.analysed_tokens ?? 0}. ` +
+      (first ? `<a href="/doc/${first}">Открыть первый текст →</a> ` : '') +
+      '<a href="/">Обновить список текстов</a>';
+  });
+
+  document.getElementById('import-lift').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const f = e.target;
+    const status = document.getElementById('import-lift-status');
+    const file = f.file.files[0];
+    if (!file) return;
+    const MAX_BYTES = 50 * 1024 * 1024;
+    if (file.size > MAX_BYTES) {
+      status.textContent = 'LIFT больше 50 МБ.';
+      return;
+    }
+    status.textContent = 'Импортирую FieldWorks LIFT…';
+    const body = new FormData();
+    body.append('file', file);
+    const ranges = f.ranges.files[0];
+    if (ranges) body.append('ranges', ranges);
+    const res = await fetch('/api/documents/upload-lift', { method: 'POST', body });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      status.textContent = 'Ошибка: ' + (err.detail || res.statusText);
+      return;
+    }
+    const data = await res.json();
+    const r = data.report || {};
+    const link = data.linking || {};
+    status.innerHTML = `entries: ${r.entries ?? 0}, senses: ${r.senses ?? 0}, ` +
+      `variants: ${r.variants ?? 0}; привязано токенов корпуса: ${link.linked ?? 0}. ` +
+      '<a href="/senses">Открыть словник →</a>';
+  });
+
+  document.getElementById('import-docx').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const f = e.target;
+    const status = document.getElementById('import-docx-status');
+    const file = f.file.files[0];
+    if (!file) return;
+    const MAX_BYTES = 25 * 1024 * 1024;
+    if (file.size > MAX_BYTES) {
+      status.textContent = 'Файл больше 25 МБ.';
+      return;
+    }
+    status.textContent = 'Импортирую…';
+    const body = new FormData();
+    body.append('file', file);
+    const res = await fetch('/api/documents/upload-partial-igt', { method: 'POST', body });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      status.textContent = 'Ошибка: ' + (err.detail || res.statusText);
+      return;
+    }
+    const data = await res.json();
+    const r = data.report || {};
+    const unmatched = (r.unmatched_igt_tokens || []).length;
+    const skippedTables = (r.parser_skipped_tables || []).length;
+    const skippedExamples = (r.skipped_examples || []).length;
+    const unassigned = (r.unassigned_translations || []).length;
+    const parts = [`строк: ${r.lines ?? '?'}`, `из разметки: ${r.user_tokens ?? 0}`,
+      `автоматически: ${r.auto_tokens ?? 0}`];
+    if (unmatched) parts.push(`не сопоставлено: ${unmatched}`);
+    if (skippedTables) parts.push(`таблиц пропущено: ${skippedTables}`);
+    if (skippedExamples) parts.push(`примеров пропущено: ${skippedExamples}`);
+    if (unassigned) parts.push(`переводов не привязано: ${unassigned}`);
+    status.innerHTML = parts.join(', ') + '. ' +
+      `<a href="/doc/${data.document_id}">Открыть документ →</a>`;
+  });
+
+  // Renaming and deleting a saved session. Delegated on the list itself so
+  // it keeps working after a delete removes one <li> and re-renders none.
+  document.getElementById('saved-sessions')?.addEventListener('click', async (e) => {
+    const link = e.target.closest('a[data-act]');
+    if (!link) return;
+    e.preventDefault();
+    const li = link.closest('li[data-id]');
+    const id = li.dataset.id;
+    if (link.dataset.act === 'rename') {
+      const current = li.querySelector('a[href^="/doc/"]').textContent;
+      const title = window.prompt('Новое название:', current);
+      if (title === null || title.trim() === '' || title === current) return;
+      const res = await fetch(`/api/documents/${id}`, {
+        method: 'PATCH', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        li.querySelector('a[href^="/doc/"]').textContent = data.title;
+      }
+    } else if (link.dataset.act === 'delete') {
+      const title = li.querySelector('a[href^="/doc/"]').textContent;
+      if (!window.confirm(`Удалить «${title}»? Текст можно будет ` +
+                          'восстановить только вручную из data/editor_sessions/.trash/.')) {
+        return;
+      }
+      const res = await fetch(`/api/documents/${id}`, { method: 'DELETE' });
+      if (res.ok) li.remove();
+    }
+  });
+
+
+  </script>
+</body>
+</html>

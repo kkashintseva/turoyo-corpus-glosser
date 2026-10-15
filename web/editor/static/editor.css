@@ -1,0 +1,580 @@
+:root {
+  --green: #d6eccb; --yellow: #fdf1c0; --red: #f6d0cf;
+  --green-b: #7bbf6a; --yellow-b: #e2c34e; --red-b: #d98a86;
+  --pending: #fdf1c0; --ink: #23282e; --muted: #6b7480; --line: #dce1e7;
+  --bg: #fbfcfd;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0; color: var(--ink); background: var(--bg);
+  font: 15px/1.5 -apple-system, "Segoe UI", system-ui, sans-serif;
+}
+.bar {
+  display: flex; align-items: center; gap: 18px;
+  padding: 10px 18px; border-bottom: 1px solid var(--line); background: #fff;
+}
+.bar strong { flex: 0 1 auto; }
+.bar a { color: #2f6bd6; text-decoration: none; }
+/* .grow is the spacer now; keeping margin-left:auto here too would push the
+   export links off to the right edge of the bar */
+.bar .chips { margin-left: 0; }
+.wrap { max-width: 1000px; margin: 22px auto; padding: 0 18px; }
+.muted { color: var(--muted); font-size: 13px; }
+.card {
+  background: #fff; border: 1px solid var(--line); border-radius: 10px;
+  padding: 16px 18px; margin-bottom: 18px;
+}
+.card h2 { margin: 0 0 8px; font-size: 16px; }
+input, textarea {
+  width: 100%; padding: 8px 10px; margin: 6px 0; border: 1px solid var(--line);
+  border-radius: 7px; font: inherit; font-family: inherit;
+}
+button {
+  padding: 8px 16px; border: 0; border-radius: 7px; background: #2f6bd6;
+  color: #fff; font: inherit; cursor: pointer;
+}
+.guide-editor {
+  height: 70vh; font-family: ui-monospace, monospace; font-size: 13px;
+  resize: vertical;
+}
+.guide-view h1, .guide-view h2, .guide-view h3 { margin: 22px 0 8px; }
+.guide-view h1:first-child, .guide-view h2:first-child, .guide-view h3:first-child { margin-top: 0; }
+.guide-view p, .guide-view ul, .guide-view ol { margin: 10px 0; }
+.guide-view ul, .guide-view ol { padding-left: 24px; }
+.guide-view li { margin: 4px 0; }
+.guide-view hr { border: 0; border-top: 1px solid var(--line); margin: 20px 0; }
+.guide-view code {
+  background: #f0f2f5; padding: 1px 5px; border-radius: 4px;
+  font-family: ui-monospace, monospace; font-size: 0.9em;
+}
+.guide-view pre {
+  background: #f0f2f5; padding: 10px 14px; border-radius: 7px;
+  overflow-x: auto;
+}
+.guide-view pre code { background: none; padding: 0; }
+/* A live-looking but inert sample of a real editor element, dropped into the
+   guide text via ```mockup:name```` (see editor/guide.py). Framed off from
+   running prose and locked against clicks — it illustrates, it doesn't act. */
+.guide-mockup {
+  display: inline-block; max-width: 100%; overflow-x: auto;
+  margin: 10px 0; padding: 10px 12px;
+  border: 1px dashed var(--line); border-radius: 8px;
+  background: var(--bg);
+  pointer-events: none; user-select: none;
+}
+.guide-mockup-missing { color: #a1332c; font-size: 13px; }
+button:hover { background: #2559b6; }
+.doclist { list-style: none; padding: 0; margin: 0; }
+.doclist li { display: flex; align-items: center; gap: 10px; padding: 6px 0;
+  border-bottom: 1px solid var(--line); }
+.chips { display: inline-flex; gap: 5px; }
+.chip { min-width: 22px; text-align: center; padding: 1px 6px; border-radius: 20px;
+  font-size: 12px; font-variant-numeric: tabular-nums; }
+.chip.green { background: var(--green); } .chip.yellow { background: var(--yellow); }
+.chip.red { background: var(--red); }
+.doc-actions { margin-left: auto; display: flex; gap: 10px; }
+.doc-actions a { color: #2f6bd6; text-decoration: none; font-size: 13px; cursor: pointer; }
+.doc-actions a:hover { text-decoration: underline; }
+
+/* ---- interlinear ---- */
+.sentence { position: relative; margin: 0 0 26px; }
+.igt { display: flex; flex-wrap: wrap; gap: 14px 16px; align-items: flex-start; }
+.token { position: relative; display: flex; flex-direction: column; gap: 3px;
+  padding: 2px 3px; border-radius: 6px; }
+
+/* joining and splitting columns, out of the way until the column is hovered;
+   the variants button alone stays in sight, faint, and comes out on hover */
+.column-tools {
+  position: absolute; top: 100%; left: 0; z-index: 5;
+  display: flex; gap: 2px; padding-top: 2px; align-items: flex-end;
+  pointer-events: none;
+}
+.column-tools > * { opacity: 0; transition: opacity .12s ease; }
+.token:hover .column-tools { pointer-events: auto; }
+.token:hover .column-tools > * { opacity: 1; }
+.column-tools button {
+  background: #fff; color: #2f6bd6; border: 1px solid var(--line);
+  border-radius: 5px; padding: 0 5px; font-size: 11px; line-height: 1.6;
+}
+.column-tools button:hover { background: #eef4ff; border-color: #2f6bd6; }
+.column-tools button.variants {
+  opacity: .45; pointer-events: auto;
+}
+.column-tools button.variants:hover { opacity: 1; }
+/* a column is no narrower than its button, so that two buttons of
+   neighbouring short words do not run into each other, and has air below */
+.token.has-variants { min-width: 88px; margin-bottom: 6px; }
+.cells { display: flex; gap: 4px; }
+
+/* Word actions remain keyboard-accessible without widening IGT columns. */
+.bar { flex-wrap: wrap; }
+select { max-width: 100%; font: inherit; padding: 5px; }
+button:disabled { opacity: .5; cursor: default; }
+.word-actions { font-size: 11px; color: var(--muted); }
+.word-actions summary { cursor: pointer; list-style: none; display: inline-flex;
+  align-items: center; gap: 3px; padding: 2px 4px 2px 0; }
+/* the browser's own triangle is tiny at 11px: draw a bigger one ourselves */
+.word-actions summary::-webkit-details-marker { display: none; }
+.word-actions summary::marker { content: ""; }
+.word-actions summary::before { content: "▶"; font-size: 15px; line-height: 1;
+  display: inline-block; transition: transform .15s; }
+.word-actions[open] > summary::before { transform: rotate(90deg); }
+.word-actions[open] { z-index: 20; }
+.word-actions-panel { position: absolute; z-index: 20; width: 290px;
+  max-width: 80vw; padding: 12px; background: white; border: 1px solid var(--line);
+  box-shadow: 0 4px 18px #0002; border-radius: 7px; font-size: 13px; color: var(--ink); }
+.word-actions-panel > * { display: block; margin-bottom: 8px; }
+.word-actions-panel button { width: 100%; padding: 6px; }
+.column-tools { top: auto; bottom: -17px; }
+.token:focus-within .column-tools { pointer-events: auto; }
+.token:focus-within .column-tools > * { opacity: 1; }
+.error { color: #a12c24; }
+.reuse-settings { font-size: 13px; }
+.reuse-settings p { margin: 4px 0; }
+/* line 1: a paragraph, not a row of columns. Nothing is aligned over line 2 —
+   the correspondence is shown on hover instead. */
+.source {
+  margin: 0 0 10px; font-weight: 600; line-height: 1.75;
+  text-align: justify; hyphens: none;
+}
+/* the padding is pulled back out by the margin: a word must occupy exactly the
+   space it would as plain text, or line 1 reads as a list again */
+.word {
+  border: 1px solid transparent; border-radius: 4px;
+  padding: 1px 3px; margin: 0 -3px; cursor: text;
+}
+.word:focus { outline: 0; border-color: #2f6bd6; background: #fff; }
+.source .punct { color: var(--muted); font-weight: 500; }
+.source[data-alignment="review"] { border-left: 3px solid #b98a25; padding-left: 8px; }
+.sentence-locator {
+  color: var(--muted); font-size: 11px; margin-bottom: 3px;
+  display: flex; align-items: center; gap: 5px;
+}
+.token-origin { color: var(--muted); font-size: 9px; margin-left: 3px; }
+
+/* Alt held: the line is the unit, not the word */
+body.line-mode .source {
+  background: var(--yellow); box-shadow: 0 0 0 3px var(--yellow);
+  border-radius: 5px; cursor: pointer;
+}
+body.line-mode .word { background: none; border-color: transparent; cursor: pointer; }
+.source-input {
+  width: 100%; margin: 0 0 10px; font: inherit; font-weight: 600;
+  line-height: 1.75; padding: 4px 8px; resize: vertical;
+  border: 1px solid #2f6bd6; border-radius: 6px;
+}
+
+/* the ᴬ…ᴬ brackets of an Arabic insert */
+.arabic-mark {
+  font-size: .72em; line-height: 0; vertical-align: super;
+  color: var(--muted); font-weight: 600;
+}
+
+/* the pair, lit from either side */
+.word.linked { background: var(--yellow); border-color: var(--yellow-b); }
+.token.linked { background: var(--yellow); box-shadow: 0 0 0 1px var(--yellow-b); }
+
+/* delete a line: out of the way until the block is under the pointer */
+.drop-line {
+  position: absolute; top: -2px; right: -30px; padding: 0 7px;
+  background: none; color: var(--muted); border: 1px solid transparent;
+  border-radius: 6px; font-size: 13px; line-height: 1.7;
+  opacity: 0; transition: opacity .12s ease;
+}
+.sentence:hover .drop-line { opacity: 1; }
+.drop-line:hover { background: var(--red); color: #8a2f2b; border-color: var(--red-b); }
+@media (max-width: 1080px) { .drop-line { right: 0; top: -22px; } }
+
+/* "проверено": a bare checkbox left of "Блок N" in the locator row — no
+   label, so no width to negotiate against the source text below it. Three
+   absolute-positioning attempts (under the ✕, further right, above the
+   block) kept fighting the source line's own width; sitting inline in a
+   row that never holds source text sidesteps the fight instead of tuning
+   it. `title` still says what it does, for anyone hovering it. */
+.review-checkbox { display: flex; cursor: pointer; }
+.review-checkbox input { margin: 0; }
+.cell { display: flex; flex-direction: column; gap: 2px; }
+.morph {
+  font-size: 14px; padding: 1px 4px; color: #333; white-space: nowrap;
+  cursor: text; border-radius: 4px;
+}
+.morph:hover { background: #eef4ff; }
+.seg-input {
+  font: inherit; font-size: 14px; padding: 1px 5px; min-width: 6ch;
+  border: 1px solid #2f6bd6; border-radius: 5px;
+}
+.sep { color: var(--muted); }
+.gloss {
+  font-size: 12.5px; padding: 2px 5px; border-radius: 5px; cursor: pointer;
+  border: 1px solid transparent; white-space: nowrap; min-width: 1.5ch;
+  text-align: center;
+}
+.gloss.confident { background: var(--green); }
+.gloss.uncertain { background: var(--yellow); }
+.gloss.unresolved { background: var(--red); color: #8a2f2b; font-weight: 700; }
+.gloss.user { border-color: var(--green-b); }
+/* an unresolved cell the program has an answer for, one click from being taken */
+.gloss.proposed { border-style: dashed; border-color: var(--red-b); }
+.gloss.pending { background: var(--pending); box-shadow: 0 0 0 2px var(--yellow-b) inset; }
+.gloss:hover { border-color: #2f6bd6; }
+.gloss-input {
+  font: inherit; font-size: 12.5px; width: 8ch; padding: 1px 4px;
+  border: 1px solid #2f6bd6; border-radius: 5px;
+}
+.translation { margin: 6px 0 0; color: #444; font-style: italic; }
+.comments { margin: 4px 0 0; padding: 0; list-style: none; }
+.comments li { font-size: 12px; color: var(--muted); display: flex;
+  gap: 5px; align-items: baseline; flex-wrap: wrap; }
+.comments .anchor { color: #2f6bd6; }
+.comments .word { font-weight: 600; color: var(--fg, #222); }
+.comments .actions a { color: #2f6bd6; text-decoration: none; cursor: pointer; }
+.comments .actions a:hover { text-decoration: underline; }
+
+/* ---- discussion threads (обсуждения) — visually distinct from примечания */
+.discussions {
+  margin: 6px 0 0; padding: 0 0 0 8px; list-style: none;
+  border-left: 3px solid #8a5cf6;
+}
+.discussions .thread { padding: 4px 0 6px; font-size: 12px; }
+.discussions .thread.resolved { opacity: .55; }
+.discussions .word { font-weight: 600; color: var(--fg, #222); }
+.discussions .msg { display: flex; gap: 5px; flex-wrap: wrap; margin: 2px 0; }
+.discussions .msg .author { font-weight: 600; color: #6a3fd0; }
+.discussions .msg .when { color: var(--muted); font-size: 11px; }
+.discussions .thread-actions a {
+  color: #6a3fd0; text-decoration: none; cursor: pointer; font-size: 11px;
+}
+.discussions .thread-actions a:hover { text-decoration: underline; }
+.discussions .reply-row { display: flex; gap: 6px; margin-top: 4px; }
+.discussions .reply-row input { flex: 1; margin: 0; font-size: 12px; padding: 4px 6px; }
+.discussions .reply-row button { padding: 3px 8px; font-size: 12px; }
+.popover .discussion-add {
+  padding: 5px 8px; border-top: 1px solid var(--line); margin-top: 4px;
+  cursor: pointer; color: #6a3fd0;
+}
+.popover .discussion-add:hover { background: #f3eeff; }
+
+/* ---- the single-editor lock ---- */
+.lock-bar {
+  display: flex; align-items: center; gap: 10px; padding: 7px 18px;
+  font-size: 13px; border-bottom: 1px solid var(--line); background: #fff6df;
+}
+.lock-bar.editing { background: #eaf6e8; }
+.lock-bar input.editor-name { width: 10em; margin: 0; padding: 4px 6px; font-size: 12.5px; }
+.lock-bar button { padding: 4px 10px; font-size: 12.5px; }
+
+/* ---- "and the other N like it" ---- */
+.bulk {
+  position: fixed; right: 18px; bottom: 18px; z-index: 40; width: 460px;
+  max-width: calc(100vw - 36px); background: #fff; border: 1px solid var(--line);
+  border-radius: 10px; box-shadow: 0 10px 34px rgba(0,0,0,.18); padding: 12px 14px;
+}
+.bulk-head { font-size: 13px; margin-bottom: 8px; }
+.bulk-list {
+  list-style: none; margin: 0 0 10px; padding: 0;
+  max-height: 40vh; overflow-y: auto;
+}
+.bulk-list li { border-top: 1px solid var(--line); }
+.bulk-list label {
+  display: flex; align-items: baseline; gap: 8px; padding: 5px 2px;
+  font-size: 12.5px; cursor: pointer;
+}
+.bulk-list label:hover { background: #f5f8ff; }
+.bulk-list input { width: auto; margin: 0; flex: 0 0 auto; }
+.bulk-context { flex: 1; color: #444; overflow-wrap: anywhere; }
+.bulk-context b { font-weight: 700; }
+.bulk-now {
+  flex: 0 0 auto; font-size: 11.5px; border-radius: 4px; padding: 1px 5px;
+  white-space: nowrap;
+}
+.bulk-now.confident { background: var(--green); }
+.bulk-now.uncertain { background: var(--yellow); }
+.bulk-now.unresolved { background: var(--red); color: #8a2f2b; }
+.bulk-bar { display: flex; gap: 8px; justify-content: flex-end; }
+/* «Леммы…»: several groups, so the panel scrolls as a whole */
+.bulk.relink { width: 640px; max-height: 80vh; overflow-y: auto; }
+.bulk.relink details { margin-bottom: 6px; }
+.bulk.relink summary { cursor: pointer; font-size: 13px; padding: 3px 0; }
+.bulk.relink .bulk-list { max-height: 32vh; }
+.bulk.relink .bulk-now { white-space: normal; padding: 0 2px 5px 24px; }
+.bulk.relink .bulk-now select { width: auto; font-size: 12px; }
+.bulk-bar button { padding: 5px 12px; font-size: 13px; }
+.bulk-bar .ghost { background: none; color: #2f6bd6; border: 1px solid var(--line); }
+.bulk-bar .ghost:hover { background: #eef4ff; }
+
+/* ---- popover: autocomplete + hover ---- */
+.popover {
+  position: absolute; z-index: 30; background: #fff; border: 1px solid var(--line);
+  border-radius: 8px; box-shadow: 0 6px 22px rgba(0,0,0,.14); padding: 6px;
+  min-width: 150px; max-width: 320px; font-size: 13px;
+}
+.popover .opt { padding: 4px 8px; border-radius: 5px; cursor: pointer; }
+.popover .opt:hover, .popover .opt.active { background: #eef4ff; }
+.popover .opt .note { display: block; color: var(--muted); font-size: 11px; }
+.popover .new-gloss-hint {
+  margin-top: 4px; padding: 6px 8px; border-top: 1px solid var(--line);
+  color: var(--muted); font-size: 11px; cursor: text;
+}
+.popover .alt { padding: 3px 8px; }
+.popover .alt .g { font-weight: 600; }
+.popover .dict { padding: 5px 8px; border-top: 1px solid var(--line); margin-top: 4px; }
+.popover .dict a { color: #2f6bd6; text-decoration: none; }
+.popover .dict.surface { color: var(--muted); }
+.popover .comment-add {
+  padding: 5px 8px; border-top: 1px solid var(--line); margin-top: 4px;
+  cursor: pointer; color: #2f6bd6;
+}
+.popover .comment-add:hover { background: #eef4ff; }
+.popover .comment-compose textarea {
+  width: 260px; height: 60px; font: inherit; resize: vertical;
+  box-sizing: border-box; padding: 4px;
+}
+.popover .comment-compose .row {
+  display: flex; gap: 6px; margin-top: 6px; justify-content: flex-end;
+}
+
+/* ---- word context menu (right-click) ---- */
+.ctxmenu {
+  position: absolute; z-index: 40; background: #fff; border: 1px solid var(--line);
+  border-radius: 8px; box-shadow: 0 6px 22px rgba(0,0,0,.14); padding: 4px;
+  min-width: 140px; font-size: 13px;
+}
+.ctxmenu .item { padding: 5px 10px; border-radius: 5px; cursor: pointer; }
+.ctxmenu .item:hover { background: #eef4ff; }
+kbd {
+  background: #eef1f4; border: 1px solid var(--line); border-radius: 4px;
+  padding: 0 4px; font: 12px monospace;
+}
+#legend { max-width: 1000px; margin: 0 auto 30px; padding: 0 18px; }
+
+/* ---- label inventory window ---- */
+.bar .grow { flex: 1; }
+.filter {
+  font: inherit; font-size: 13px; padding: 3px 8px;
+  border: 1px solid var(--line); border-radius: 6px; min-width: 180px;
+}
+.inventory section { margin: 0 0 22px; }
+.inventory h2 {
+  font-size: 13px; text-transform: uppercase; letter-spacing: .04em;
+  color: var(--muted); font-weight: 600; margin: 0 0 8px;
+}
+.label-card {
+  border: 1px solid var(--line); border-radius: 8px;
+  padding: 8px 10px; margin: 0 0 6px; background: #fff;
+}
+.label-head { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.label-name {
+  font: inherit; font-weight: 700; font-size: 14px; cursor: pointer;
+  background: none; border: none; padding: 0; color: #1a1a1a;
+}
+.label-name:hover { color: #2f6bd6; text-decoration: underline; }
+.label-head .count {
+  font-size: 11px; color: var(--muted); background: #f0f2f5;
+  border-radius: 9px; padding: 1px 7px;
+}
+.definition { font-size: 12.5px; color: #444; cursor: text; flex: 1; min-width: 200px; }
+.definition:hover { text-decoration: underline dotted; }
+.definition.missing { color: #a3423c; font-weight: 600; }
+.folds { font-size: 11.5px; color: var(--muted); }
+.rename {
+  font: inherit; font-size: 12px; cursor: pointer; color: #2f6bd6;
+  background: none; border: 1px solid var(--line); border-radius: 6px;
+  padding: 2px 8px;
+}
+.rename:hover { border-color: #2f6bd6; }
+.caveat {
+  margin: 6px 0 0; font-size: 12px; color: #7a5c00;
+  background: var(--yellow); border-radius: 6px; padding: 5px 8px;
+}
+.usage {
+  margin: 8px 0 0; padding: 7px 9px; background: #fafbfc;
+  border: 1px solid var(--line); border-radius: 6px;
+  font-size: 12.5px; line-height: 1.9; overflow-x: auto;
+}
+.usage-item b { font-weight: 600; }
+.usage mark { background: var(--yellow); border-radius: 3px; padding: 0 2px; }
+.usage-group { white-space: nowrap; }
+.usage-edit {
+  margin-left: 5px; padding: 0 5px; border: 0; background: none;
+  color: #2f6bd6; font: inherit; font-size: 11px; cursor: pointer;
+  text-decoration: underline dotted;
+}
+.usage-source { margin-left: 4px; color: var(--muted); font-size: 10.5px; }
+
+/* ---- export links in the bar ---- */
+.export { font-size: 12.5px; color: var(--muted); }
+.export a {
+  color: #2f6bd6; text-decoration: none; margin-left: 7px;
+  border: 1px solid var(--line); border-radius: 6px; padding: 2px 8px;
+}
+.export a:hover { border-color: #2f6bd6; }
+
+/* a token arrived at from the inventory window */
+.token.focused {
+  outline: 2px solid #2f6bd6; outline-offset: 3px; border-radius: 6px;
+  transition: outline-color .8s ease;
+}
+.usage-item { cursor: pointer; border-radius: 4px; padding: 0 2px; }
+.usage-item:hover { background: #eef4ff; }
+
+/* text and its per-line translation, side by side */
+.parallel { display: flex; gap: 14px; }
+.parallel label {
+  flex: 1; display: block; font-size: 12.5px; color: var(--muted);
+}
+.parallel textarea { font-family: inherit; }
+@media (max-width: 720px) { .parallel { flex-direction: column; } }
+
+/* per-line translation inside the editor */
+.translation { cursor: text; border-radius: 5px; padding: 1px 4px; }
+.translation:hover { background: #f0f4fa; }
+.translation.empty { color: var(--muted); font-style: normal; }
+.translation-input {
+  width: 100%; font: inherit; font-size: 14px; font-style: italic;
+  padding: 3px 6px; border: 1px solid #2f6bd6; border-radius: 6px; margin: 6px 0 0;
+}
+
+/* speaker tag: transcription, not language */
+.word.speaker { color: var(--muted); font-weight: 500; }
+.token.speaker .morph { color: #9aa3ad; }
+.token.speaker .gloss { background: #eef1f4; color: var(--muted); font-weight: 500; }
+
+/* undo / redo and the add-a-line form */
+.undo-redo { display: inline-flex; gap: 4px; }
+.undo-redo button {
+  background: none; color: #2f6bd6; border: 1px solid var(--line);
+  border-radius: 6px; padding: 1px 9px; font-size: 15px; line-height: 1.4;
+}
+.undo-redo button:hover:not(:disabled) { background: #eef4ff; }
+.undo-redo button:disabled { color: #c3c9d1; cursor: default; }
+.add-line { margin: 0 auto 40px; }
+.add-line form { display: flex; gap: 8px; align-items: flex-start; }
+.add-line textarea { margin: 0; font-family: inherit; resize: vertical; }
+.add-line textarea[name="text"] { flex: 2; }
+.add-line textarea[name="translation"] { flex: 1; }
+.add-line button { white-space: nowrap; }
+
+/* «Привязать к лемме…» inside the word menu */
+.lemma-picker { margin-top: 6px; }
+.lemma-picker input { width: 100%; box-sizing: border-box; font-size: 13px; padding: 4px 6px; }
+.lemma-results { list-style: none; margin: 4px 0 0; padding: 0; max-height: 220px; overflow-y: auto; }
+.lemma-results li button {
+  display: block; width: 100%; text-align: left; background: none; color: inherit;
+  border: 0; border-top: 1px solid var(--line); padding: 4px 2px; font-size: 12.5px; cursor: pointer;
+}
+.lemma-results li button:hover { background: #f5f8ff; }
+.lemma-picker > button.ghost { margin-top: 6px; width: 100%; }
+.new-lemma { margin-top: 6px; display: grid; gap: 4px; font-size: 12.5px; }
+.new-lemma label { display: grid; gap: 2px; }
+.new-lemma input { width: 100%; box-sizing: border-box; font-size: 13px; padding: 4px 6px; }
+.only-new { font-size: 13px; display: inline-flex; align-items: center; gap: 4px; margin-right: 8px; }
+
+/* a word with a note or an open discussion */
+.word.annotated { background: #ECDDF8; border-radius: 4px; box-shadow: 0 0 0 2px #ECDDF8; }
+.token.annotated { background: #F4ECFC; border-radius: 6px; box-shadow: 0 0 0 1px #CDB4EA; }
+
+/* FLEX/Turoyo lexicon: one lemma, several child senses. */
+.sense-list { display: inline-flex; flex-wrap: wrap; gap: .35rem; align-items: center; min-width: 0; }
+.sense-chip { display: inline-flex; align-items: center; gap: .15rem; border: 1px solid var(--line, #ccc); border-radius: .45rem; padding: .08rem .2rem .08rem .4rem; }
+.sense-chip .sense-action { min-width: 1.6rem; padding-left: .25rem; padding-right: .25rem; }
+
+/* Lexicon concordance: full saved-text context with a clickable KWIC line. */
+.usage-heading { font-weight: 650; margin: .2rem 0 .55rem; }
+.usage-contexts { display: grid; gap: .65rem; margin-top: .25rem; }
+.usage-context {
+  position: relative; display: grid; gap: .18rem; padding: .5rem .6rem;
+  border: 1px solid var(--line, #d8dde5); border-radius: .5rem;
+  background: #fff;
+}
+.usage-context-meta { font-size: 12px; color: var(--muted); }
+.usage-context-line {
+  width: fit-content; max-width: 100%; border: 0; padding: 0; background: none;
+  color: inherit; font: inherit; text-align: left; cursor: pointer;
+}
+.usage-context-line:hover { text-decoration: underline; }
+.usage-context-full { font-size: 13px; line-height: 1.35; }
+.usage-context-translation { font-size: 13px; line-height: 1.35; color: var(--muted); font-style: italic; }
+.usage-context-analysis { font-size: 12px; color: var(--muted); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+.usage-context-reassign { justify-self: start; margin-top: .15rem; }
+.sense-value {
+  border: 0; background: none; color: inherit; font: inherit; padding: 0; cursor: pointer;
+}
+.sense-value:hover { text-decoration: underline; }
+
+/* Exact FieldWorks category of the selected lexical entry (Preterite,
+   Infectum, etc.). It is intentionally always visible: category identity is
+   not a hover-only detail. */
+.lexical-category {
+  font-size: 9px;
+  line-height: 1.2;
+  color: var(--muted);
+  margin-top: 2px;
+  white-space: normal;
+  max-width: 12rem;
+}
+
+.grammatical-infos { display: inline-flex; flex-wrap: wrap; gap: 4px; align-items: center; }
+.grammatical-info {
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 1px 6px;
+  font-size: 10px;
+  color: var(--muted);
+  white-space: nowrap;
+}
+.lexical-gi { margin-left: 5px; font-weight: 600; }
+.inventory-limit { margin: 8px 0 12px; }
+
+
+/* ---- Ritter read-only dictionary hints ---- */
+.popover.has-ritter { max-width: 520px; }
+.ritter-hints {
+  margin-top: 7px; padding-top: 7px; border-top: 1px solid var(--line);
+  color: var(--ink); text-align: left;
+}
+.ritter-hints .ritter-title {
+  font-weight: 700; margin: 0 0 5px; letter-spacing: .01em;
+}
+.ritter-entry { padding: 6px 7px; border-radius: 6px; background: #faf9f6; margin: 4px 0; }
+.ritter-entry.exact { background: #f2f7ee; }
+.ritter-entry-head { display: flex; align-items: baseline; gap: 7px; flex-wrap: wrap; }
+.ritter-entry-head strong { font-size: 13px; }
+.ritter-badge {
+  display: inline-block; padding: 1px 5px; border: 1px solid var(--line);
+  border-radius: 10px; color: var(--muted); font-size: 10px; font-weight: 500;
+}
+.ritter-badge.exact { color: #41683a; border-color: #b9ceb4; background: #fff; }
+.ritter-meta { color: var(--muted); font-size: 10px; margin-top: 2px; }
+.ritter-raw { font-size: 11px; line-height: 1.35; margin-top: 3px; overflow-wrap: anywhere; }
+.ritter-empty { color: var(--muted); font-size: 11px; padding: 3px 0; }
+.word-actions-panel .ritter-word-results {
+  width: 100%; max-height: 360px; overflow: auto; margin: 2px 0 8px;
+  padding-right: 2px;
+}
+.word-actions-panel .ritter-word-results .ritter-hints { margin-top: 0; }
+
+/* ---- conservative Turoyo verb parser suggestions ---- */
+.verb-parser-word-results {
+  width: 100%; max-height: 420px; overflow: auto; margin: 2px 0 8px;
+  padding-right: 2px;
+}
+.verb-parser-hints {
+  margin-top: 7px; padding-top: 7px; border-top: 1px solid var(--line);
+  color: var(--ink); text-align: left;
+}
+.verb-parser-title { font-weight: 700; margin: 0 0 5px; }
+.verb-parser-entry {
+  padding: 7px 8px; border: 1px solid var(--line); border-radius: 6px;
+  background: #fafafa; margin: 5px 0;
+}
+.verb-parser-seg {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 13px; font-weight: 700; overflow-wrap: anywhere;
+}
+.verb-parser-gloss {
+  margin-top: 2px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 12px; overflow-wrap: anywhere;
+}
+.verb-parser-meta { margin-top: 4px; color: var(--muted); font-size: 10.5px; line-height: 1.35; }
+.verb-parser-empty { color: var(--muted); font-size: 11px; padding: 4px 0; }
+.verb-parser-apply { margin-top: 6px; width: 100%; }

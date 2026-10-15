@@ -1,0 +1,325 @@
+{
+  "labels": {
+    "1p": {
+      "definition": "",
+      "category": "FLEx corpus"
+    },
+    "1s": {
+      "definition": "",
+      "category": "FLEx corpus"
+    },
+    "2fs": {
+      "definition": "",
+      "category": "FLEx corpus"
+    },
+    "2ms": {
+      "definition": "",
+      "category": "FLEx corpus"
+    },
+    "2p": {
+      "definition": "",
+      "category": "FLEx corpus"
+    },
+    "2s": {
+      "definition": "",
+      "category": "FLEx corpus"
+    },
+    "3fs": {
+      "definition": "",
+      "category": "FLEx corpus"
+    },
+    "3ms": {
+      "definition": "",
+      "category": "FLEx corpus"
+    },
+    "3p": {
+      "definition": "",
+      "category": "FLEx corpus"
+    },
+    "3s": {
+      "definition": "",
+      "category": "FLEx corpus"
+    },
+    "C": {
+      "definition": "",
+      "category": "FLEx corpus"
+    },
+    "D": {
+      "definition": "",
+      "category": "FLEx corpus"
+    },
+    "DM": {
+      "definition": "",
+      "category": "FLEx corpus"
+    },
+    "I": {
+      "definition": "",
+      "category": "FLEx corpus"
+    },
+    "ID": {
+      "definition": "",
+      "category": "FLEx corpus"
+    },
+    "OK": {
+      "definition": "",
+      "category": "FLEx corpus"
+    },
+    "PN": {
+      "definition": "",
+      "category": "FLEx corpus"
+    },
+    "a": {
+      "definition": "",
+      "category": "FLEx corpus"
+    },
+    "abl": {
+      "definition": "",
+      "category": "FLEx corpus"
+    },
+    "after": {
+      "definition": "",
+      "category": "FLEx corpus"
+    },
+    "al": {
+      "definition": "",
+      "category": "FLEx corpus"
+    },
+    "anp": {
+      "definition": "",
+      "category": "FLEx corpus"
+    },
+    "atr": {
+      "definition": "",
+      "category": "FLEx corpus"
+    },
+    "because": {
+      "definition": "",
+      "category": "FLEx corpus"
+    },
+    "ben": {
+      "definition": "",
+      "category": "FLEx corpus"
+    },
+    "chez": {
+      "definition": "",
+      "category": "FLEx corpus"
+    },
+    "cmpr": {
+      "definition": "",
+      "category": "FLEx corpus"
+    },
+    "comp": {
+      "definition": "",
+      "category": "FLEx corpus"
+    },
+    "cop": {
+      "definition": "",
+      "category": "FLEx corpus"
+    },
+    "d": {
+      "definition": "",
+      "category": "FLEx corpus"
+    },
+    "dem": {
+      "definition": "",
+      "category": "FLEx corpus"
+    },
+    "deo": {
+      "definition": "",
+      "category": "FLEx corpus"
+    },
+    "dep": {
+      "definition": "",
+      "category": "FLEx corpus"
+    },
+    "detr": {
+      "definition": "",
+      "category": "FLEx corpus"
+    },
+    "dim": {
+      "definition": "",
+      "category": "FLEx corpus"
+    },
+    "dist": {
+      "definition": "",
+      "category": "FLEx corpus"
+    },
+    "ez": {
+      "definition": "",
+      "category": "FLEx corpus"
+    },
+    "f": {
+      "definition": "",
+      "category": "FLEx corpus"
+    },
+    "for": {
+      "definition": "",
+      "category": "FLEx corpus"
+    },
+    "four": {
+      "definition": "",
+      "category": "FLEx corpus"
+    },
+    "from": {
+      "definition": "",
+      "category": "FLEx corpus"
+    },
+    "front": {
+      "definition": "",
+      "category": "FLEx corpus"
+    },
+    "fut": {
+      "definition": "",
+      "category": "FLEx corpus"
+    },
+    "if": {
+      "definition": "",
+      "category": "FLEx corpus"
+    },
+    "in": {
+      "definition": "",
+      "category": "FLEx corpus"
+    },
+    "inal": {
+      "definition": "",
+      "category": "FLEx corpus"
+    },
+    "infc": {
+      "definition": "",
+      "category": "FLEx corpus"
+    },
+    "ins": {
+      "definition": "",
+      "category": "FLEx corpus"
+    },
+    "intr": {
+      "definition": "",
+      "category": "FLEx corpus"
+    },
+    "io": {
+      "definition": "",
+      "category": "FLEx corpus"
+    },
+    "ipv": {
+      "definition": "",
+      "category": "FLEx corpus"
+    },
+    "lat": {
+      "definition": "",
+      "category": "FLEx corpus"
+    },
+    "like": {
+      "definition": "",
+      "category": "FLEx corpus"
+    },
+    "m": {
+      "definition": "",
+      "category": "FLEx corpus"
+    },
+    "man": {
+      "definition": "",
+      "category": "FLEx corpus"
+    },
+    "neg": {
+      "definition": "",
+      "category": "FLEx corpus"
+    },
+    "o": {
+      "definition": "",
+      "category": "FLEx corpus"
+    },
+    "p": {
+      "definition": "",
+      "category": "FLEx corpus"
+    },
+    "pos": {
+      "definition": "",
+      "category": "FLEx corpus"
+    },
+    "pos:3p": {
+      "definition": "",
+      "category": "FLEx corpus"
+    },
+    "pret": {
+      "definition": "",
+      "category": "FLEx corpus"
+    },
+    "prl": {
+      "definition": "",
+      "category": "FLEx corpus"
+    },
+    "prox": {
+      "definition": "",
+      "category": "FLEx corpus"
+    },
+    "prs": {
+      "definition": "",
+      "category": "FLEx corpus"
+    },
+    "prst": {
+      "definition": "",
+      "category": "FLEx corpus"
+    },
+    "prsv": {
+      "definition": "",
+      "category": "FLEx corpus"
+    },
+    "pst": {
+      "definition": "",
+      "category": "FLEx corpus"
+    },
+    "rel": {
+      "definition": "",
+      "category": "FLEx corpus"
+    },
+    "s": {
+      "definition": "",
+      "category": "FLEx corpus"
+    },
+    "say": {
+      "definition": "",
+      "category": "FLEx corpus"
+    },
+    "sbrd": {
+      "definition": "",
+      "category": "FLEx corpus"
+    },
+    "than": {
+      "definition": "",
+      "category": "FLEx corpus"
+    },
+    "three": {
+      "definition": "",
+      "category": "FLEx corpus"
+    },
+    "to": {
+      "definition": "",
+      "category": "FLEx corpus"
+    },
+    "top": {
+      "definition": "",
+      "category": "FLEx corpus"
+    },
+    "until": {
+      "definition": "",
+      "category": "FLEx corpus"
+    },
+    "up": {
+      "definition": "",
+      "category": "FLEx corpus"
+    },
+    "voc": {
+      "definition": "",
+      "category": "FLEx corpus"
+    },
+    "when": {
+      "definition": "",
+      "category": "FLEx corpus"
+    },
+    "С": {
+      "definition": "",
+      "category": "FLEx corpus"
+    }
+  },
+  "display_map": {}
+}

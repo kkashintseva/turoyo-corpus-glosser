@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Словник — Corpus Glosser</title>
+  <link rel="stylesheet" href="/static/editor.css?v=20261012-2">
+  <style>
+    .export-lexicon {
+      display: inline-flex;
+      align-items: center;
+      min-height: 32px;
+      padding: 0 10px;
+      border: 1px solid currentColor;
+      border-radius: 4px;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+  </style>
+</head>
+<body>
+  <header class="bar">
+    <a href="/">← Все тексты</a>
+    <strong>Словник</strong>
+    <span class="grow"></span>
+    <a href="/api/senses/export.csv" download class="export-lexicon">Экспорт словаря CSV</a>
+    <button id="seed-all" type="button">Загрузить всё из корпуса разом</button>
+    <button id="undo-edit" type="button" title="Отменить слияние/удаление/переименование лексемы по коду правки (показан после каждого такого действия)">Отменить правку…</button>
+    <label class="only-new" title="Только лексемы, созданные из текстов и авторских правок">
+      <input id="only-new" type="checkbox"> только новые лексемы</label>
+    <input id="filter" class="filter" type="search" placeholder="лемма, значение или категория">
+  </header>
+  <div id="source-filter" class="bulk-bar source-filter"></div>
+  <main class="wrap">
+    <p class="muted">Если импортирован FieldWorks LIFT, <b>каждая LIFT-entry остаётся отдельной словарной статьёй</b> — даже если две статьи пишутся одинаково или относятся к формам одного глагола. Точная категория FieldWorks (<b>Preterite</b>, <b>Infectum</b>, <b>Imperative</b> и т. п.) показывается рядом со статьёй и её senses. Варианты формы принадлежат только своей исходной entry. FLEXTEXT добавляет частоты и реальные употребления, а ваши новые значения добавляются поверх FieldWorks к выбранной entry. Если LIFT ещё не загружен, старые технические FLEX-записи с одной леммой по-прежнему показываются совместимо как одна статья. Клик по статье открывает только её собственные контексты; клик по конкретному значению показывает контексты только этого sense; омонимичная другая LIFT-entry туда не подмешивается. <a href="/labels">«Инвентарь глосс»</a> отвечает за грамматические ярлыки межстрочника. Для больших LIFT без поиска показываются первые статьи; поиск работает по лемме, значению и FieldWorks-категории.</p>
+    <p id="filter-empty" class="muted" hidden>Ничего не найдено при выбранных источниках.</p>
+    <div id="inventory" class="inventory">Загрузка…</div>
+  </main>
+  <script src="/static/senses.js?v=20261012-2"></script>
+</body>
+</html>

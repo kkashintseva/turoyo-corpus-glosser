@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Инструкция — Corpus Glosser</title>
+  <link rel="stylesheet" href="/static/editor.css">
+</head>
+<body>
+  <header class="bar">
+    <a href="/">← Все тексты</a>
+    <strong>Инструкция</strong>
+    <span class="grow"></span>
+    <span id="guide-status" class="muted"></span>
+    <button id="guide-cancel" type="button" hidden>Отмена</button>
+    <button id="guide-edit" type="button">Править</button>
+    <button id="guide-save" type="button" hidden>Сохранить</button>
+  </header>
+  <main class="wrap">
+    <div id="guide-view" class="guide-view"></div>
+    <textarea id="guide-text" class="guide-editor" spellcheck="false" hidden></textarea>
+  </main>
+  <script src="/static/guide.js"></script>
+</body>
+</html>

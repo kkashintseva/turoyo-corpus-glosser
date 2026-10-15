@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Редактор — Corpus Glosser</title>
+  <link rel="stylesheet" href="/static/editor.css?v=20261012-ritter1">
+  <link rel="stylesheet" href="/static/timecodes.css?v=20260927-1">
+</head>
+<body data-document-id="{{ document_id }}">
+  <header class="bar">
+    <a href="/">← Все тексты</a>
+    <strong id="doc-title">…</strong>
+    <span class="chips" id="doc-counts"></span>
+    <span class="undo-redo">
+      <button id="undo" type="button" title="Отменить (Ctrl+Z)" disabled>↶</button>
+      <button id="redo" type="button" title="Вернуть (Ctrl+Shift+Z)" disabled>↷</button>
+    </span>
+    <span class="grow"></span>
+    <span class="export">
+      Выгрузить:
+      <a id="dl-docx" href="#" download>docx</a>
+      <a id="dl-json" href="#" download>json</a>
+      <a id="dl-csv" href="#" download>csv</a>
+    </span>
+    <a href="/labels">Инвентарь глосс</a>
+    <button id="relink" type="button"
+      title="Привязать проверенные слова к словнику: показать, что изменится, и применить (одним Ctrl+Z)">Леммы…</button>
+    <a href="/senses">Словник</a>
+    <a href="/guide">Инструкция</a>
+<a href="/stats">Статистика</a>
+  </header>
+
+  <div id="lock-bar" class="lock-bar"></div>
+
+  <div class="reuse-settings wrap">
+    <label>Законченные разборы по умолчанию:
+      <select id="default-reuse" aria-label="Общий режим запоминания">
+        <option value="true">Запоминать для всех текстов</option>
+        <option value="false">Сохранять только здесь</option>
+      </select>
+    </label>
+    <label>В этом тексте:
+      <select id="doc-reuse" aria-label="Режим запоминания для этого текста">
+        <option value="inherit">Как в общей настройке</option>
+        <option value="true">Запоминать для всех текстов</option>
+        <option value="false">Сохранять только здесь</option>
+      </select>
+    </label>
+    <p class="muted">Первая настройка — общая для проекта; вторая — только для этого текста и сильнее общей. Исключение для отдельного слова и отмена правила — в меню «Слово». Сохранённые тексты не переписываются автоматически.</p>
+    <p id="reuse-feedback" role="status" aria-live="polite"></p>
+  </div>
+
+  <main class="wrap" id="doc"></main>
+
+  <div class="wrap add-line">
+    <form id="new-line">
+      <textarea name="text" rows="2" required
+        placeholder="Новые строки расшифровки — программа проглоссирует. Одна строка — один блок."></textarea>
+      <textarea name="translation" rows="2"
+        placeholder="перевод построчно (необязательно)"></textarea>
+      <button type="submit">Добавить строку</button>
+    </form>
+  </div>
+
+  <div id="legend" class="muted">
+    Строка&nbsp;1 — исходный текст, сплошной строкой; при наведении на слово
+    подсвечивается его блок ниже, и наоборот. С зажатым <kbd>Alt</kbd>
+    выделяется вся строка — клик правит её целиком: знаки препинания и новые
+    слова, при этом уцелевшие слова сохраняют свои глоссы.
+    Правьте слово и уходите с него:
+    строки&nbsp;2–3 переглоссируются и подсвечиваются, <kbd>Del</kbd> отменяет
+    переглоссирование. <b>Клик по строке&nbsp;2</b> — правка морфем и границ
+    (<code>-</code>, <code>=</code>); строка&nbsp;1 при этом не меняется.
+    Клик по глоссе — правка с автодополнением; если такое же слово есть в
+    тексте ещё где-то, программа предложит список с контекстами — снимите
+    галочки там, где не подходит. Наведение —
+    альтернативы и словарь. Под колонкой слова с несколькими разборами всегда
+    видна кнопка <b>варианты</b>; при наведении рядом с ней: <b>=→</b> приклеить
+    следующее слово через <code>=</code>, <b>ᴬ→</b> слить в одну глоссу
+    (арабская вставка), <b>⊣</b> разделить обратно.
+    <kbd>Alt</kbd>+<kbd>N</kbd> — примечание к слову или глоссе (то же самое
+    — пункт «+ примечание» в поповере при наведении, и «Примечание» в
+    меню по правому клику на слове). У готового примечания есть
+    «изменить» / «удалить».
+    <b>✕</b> справа от блока удаляет строку целиком.
+    <kbd>Alt</kbd>+<kbd>R</kbd> — переглоссировать строку целиком заново
+    (наведите курсор на неё или кликните по ней), не считаясь с ручными
+    правками или защищённой разметкой. Галочка «проверено» под ✕ отмечает
+    строку как полностью проверенную (автоматические глоссы тоже
+    учитываются) и начисляет оплату по ставке 3₽/слово на счёт того, чьё имя
+    указано вверху страницы; текущая сумма показывается после каждого
+    нажатия.
+  </div>
+
+  <div id="bulk" class="bulk" hidden></div>
+
+  <div id="popover" class="popover" hidden></div>
+
+  <script src="/static/editor.js?v=20261012-ritter1"></script>
+  <script src="/static/timecodes.js?v=20260917-2"></script>
+  <script src="/static/timecode_transport.js?v=20260927-1"></script>
+</body>
+</html>

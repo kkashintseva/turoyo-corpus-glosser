@@ -1,0 +1,374 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Статистика проверки</title>
+
+  <style>
+    :root {
+      font-family:
+        Inter, ui-sans-serif, system-ui, -apple-system,
+        BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: #263342;
+      background: #f7f8fa;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      padding: 28px;
+    }
+
+    main {
+      max-width: 1450px;
+      margin: 0 auto;
+    }
+
+    a {
+      color: #2865c7;
+      text-decoration: none;
+    }
+
+    a:hover { text-decoration: underline; }
+
+    .top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      margin-bottom: 24px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 30px;
+    }
+
+    h2 {
+      margin-top: 34px;
+      margin-bottom: 14px;
+    }
+
+    .back {
+      font-size: 15px;
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+      gap: 12px;
+      margin-bottom: 28px;
+    }
+
+    .card {
+      background: white;
+      border: 1px solid #dde3ea;
+      border-radius: 12px;
+      padding: 16px 18px;
+    }
+
+    .card strong {
+      display: block;
+      font-size: 26px;
+      margin-bottom: 4px;
+    }
+
+    .muted {
+      color: #718096;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+      border: 1px solid #dde3ea;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    th,
+    td {
+      text-align: left;
+      padding: 11px 13px;
+      border-bottom: 1px solid #e7ebef;
+      vertical-align: top;
+    }
+
+    th {
+      font-size: 13px;
+      color: #667385;
+      background: #f5f7f9;
+      position: sticky;
+      top: 0;
+    }
+
+    tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .num {
+      text-align: right;
+      white-space: nowrap;
+    }
+
+    .status {
+      display: inline-block;
+      border-radius: 999px;
+      padding: 4px 9px;
+      font-size: 13px;
+      white-space: nowrap;
+    }
+
+    .status-complete {
+      background: #dcefd8;
+      color: #2d6b32;
+    }
+
+    .status-partial {
+      background: #fff1bd;
+      color: #775b00;
+    }
+
+    .status-none {
+      background: #f5d4d2;
+      color: #8b302c;
+    }
+
+    .progress {
+      width: 150px;
+      height: 8px;
+      border-radius: 999px;
+      background: #e8ebef;
+      overflow: hidden;
+      margin-top: 5px;
+    }
+
+    .progress > span {
+      display: block;
+      height: 100%;
+      background: #4c7ed8;
+    }
+
+    .reviewer {
+      display: inline-block;
+      margin-right: 10px;
+      white-space: nowrap;
+    }
+
+    .filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 0 0 12px;
+    }
+
+    .filters button {
+      border: 1px solid #cfd7e1;
+      background: white;
+      border-radius: 8px;
+      padding: 7px 12px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .filters button.active {
+      background: #326ed8;
+      color: white;
+      border-color: #326ed8;
+    }
+
+    .payment {
+      font-weight: 650;
+    }
+
+    @media (max-width: 800px) {
+      body { padding: 14px; }
+      .table-wrap { overflow-x: auto; }
+      table { min-width: 850px; }
+    }
+  </style>
+</head>
+
+<body>
+<main>
+  <div class="top">
+    <h1>Статистика проверки</h1>
+    <a class="back" href="/">← к списку текстов</a>
+  </div>
+
+  <div class="cards">
+    <div class="card">
+      <strong>{{ stats.summary.percent }}%</strong>
+      <span class="muted">строк проверено</span>
+    </div>
+
+    <div class="card">
+      <strong>{{ stats.summary.reviewed_lines }} / {{ stats.summary.total_lines }}</strong>
+      <span class="muted">проверенных строк</span>
+    </div>
+
+    <div class="card">
+      <strong>{{ stats.summary.complete }}</strong>
+      <span class="muted">текстов полностью готово</span>
+    </div>
+
+    <div class="card">
+      <strong>{{ stats.summary.partial }}</strong>
+      <span class="muted">текстов в работе</span>
+    </div>
+
+    <div class="card">
+      <strong>{{ stats.summary.none }}</strong>
+      <span class="muted">текстов без галочек</span>
+    </div>
+
+    <div class="card">
+      <strong>{{ stats.summary.reviewed_words }}</strong>
+      <span class="muted">проверено слов</span>
+    </div>
+
+    <div class="card">
+      <strong>{{ stats.summary.payment }} ₽</strong>
+      <span class="muted">
+        всего начислено · {{ stats.rate }} ₽/слово
+      </span>
+    </div>
+  </div>
+
+  <h2>По редакторам</h2>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Редактор</th>
+          <th class="num">Текстов</th>
+          <th class="num">Строк</th>
+          <th class="num">Слов</th>
+          <th class="num">Начислено</th>
+        </tr>
+      </thead>
+
+      <tbody>
+      {% for row in stats.editors %}
+        <tr>
+          <td><strong>{{ row.name }}</strong></td>
+          <td class="num">{{ row.texts }}</td>
+          <td class="num">{{ row.lines }}</td>
+          <td class="num">{{ row.words }}</td>
+          <td class="num payment">{{ row.payment }} ₽</td>
+        </tr>
+      {% else %}
+        <tr>
+          <td colspan="5" class="muted">
+            Пока ни одна строка не отмечена как проверенная.
+          </td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <h2>По текстам</h2>
+
+  <div class="filters">
+    <button class="active" data-filter="all">Все</button>
+    <button data-filter="partial">Частично</button>
+    <button data-filter="none">Не начаты</button>
+    <button data-filter="complete">Готовы</button>
+  </div>
+
+  <div class="table-wrap">
+    <table id="texts">
+      <thead>
+        <tr>
+          <th>Статус</th>
+          <th>Текст</th>
+          <th>Прогресс</th>
+          <th class="num">Проверено строк</th>
+          <th class="num">Осталось</th>
+          <th class="num">Проверено слов</th>
+          <th>Кто проверял</th>
+        </tr>
+      </thead>
+
+      <tbody>
+      {% for row in stats.documents %}
+        <tr data-status="{{ row.status }}">
+          <td>
+            {% if row.status == "complete" %}
+              <span class="status status-complete">✓ готов</span>
+            {% elif row.status == "partial" %}
+              <span class="status status-partial">в работе</span>
+            {% else %}
+              <span class="status status-none">не начат</span>
+            {% endif %}
+          </td>
+
+          <td>
+            <a href="/doc/{{ row.document_id }}">
+              <strong>{{ row.title }}</strong>
+            </a>
+          </td>
+
+          <td>
+            {{ row.percent }}%
+            <div class="progress">
+              <span style="width: {{ row.percent }}%"></span>
+            </div>
+          </td>
+
+          <td class="num">
+            {{ row.reviewed_lines }} / {{ row.total_lines }}
+          </td>
+
+          <td class="num">
+            {{ row.pending_lines }}
+          </td>
+
+          <td class="num">
+            {{ row.reviewed_words }}
+          </td>
+
+          <td>
+            {% for person in row.reviewers %}
+              <span class="reviewer">
+                {{ person.name }}
+                <span class="muted">
+                  · {{ person.lines }} стр.
+                  · {{ person.words }} сл.
+                </span>
+              </span>
+            {% else %}
+              <span class="muted">—</span>
+            {% endfor %}
+          </td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</main>
+
+<script>
+document.querySelectorAll("[data-filter]").forEach((button) => {
+  button.addEventListener("click", () => {
+    document.querySelectorAll("[data-filter]")
+      .forEach((b) => b.classList.remove("active"));
+
+    button.classList.add("active");
+
+    const wanted = button.dataset.filter;
+
+    document.querySelectorAll("#texts tbody tr").forEach((row) => {
+      row.hidden =
+        wanted !== "all" &&
+        row.dataset.status !== wanted;
+    });
+  });
+});
+</script>
+</body>
+</html>

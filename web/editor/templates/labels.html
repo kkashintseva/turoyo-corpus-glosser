@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Инвентарь глосс — Corpus Glosser</title>
+  <link rel="stylesheet" href="/static/editor.css">
+</head>
+<body>
+  <header class="bar">
+    <a href="/">← Все тексты</a>
+    <strong>Инвентарь глосс</strong>
+    <span class="grow"></span>
+    <input id="filter" class="filter" type="search" placeholder="фильтр по лейблу">
+  </header>
+  <main class="wrap">
+    <p class="muted">Лейблы, которые программа использует на выходе, по категориям.
+      Переименование меняет <code>config/gloss_inventory.flex.json</code> — это
+      курируемый конфиг, поэтому правка действует глобально и переживает
+      пересборку; открытые тексты переписываются сразу. Старое написание
+      сохраняется как свёртка, чтобы уже набранная глосса не осталась
+      неизвестной. Клик по лейблу разворачивает конкорданс по корпусу и всем
+      сохранённым в редакторе текстам; новые загруженные тексты попадают сюда
+      сразу после сохранения. В конкордансе: <b>клик по форме</b> — перейти к
+      тексту с ней, кнопка <b>«исправить»</b> — изменить сегментацию и глоссы.
+      Исправление
+      пишется в <code>corrections_v2/reusable_morphology.jsonl</code> и
+      применяется ко всем текстам с этой формой.</p>
+    <div id="inventory" class="inventory">Загрузка…</div>
+  </main>
+  <script src="/static/labels.js"></script>
+</body>
+</html>
