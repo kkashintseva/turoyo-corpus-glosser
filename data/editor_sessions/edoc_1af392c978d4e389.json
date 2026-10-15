@@ -3,7 +3,7 @@
  "document_id": "edoc_1af392c978d4e389",
  "title": "",
  "created": "2026-10-12T07:57:22+00:00",
- "updated": "2026-10-14T15:49:29+00:00",
+ "updated": "2026-10-15T07:53:19+00:00",
  "source_text": "E, layt. Layto, ḥur, lo, lo, lo, yaʕni layto lo+darnake, layto lo+kohnuṯo, layt lo әnsā́n dmәftakar bu+aṯro, bәdmede d̥soyam. Ŭ i+dukṯaṯe kula da+mšiḥoye, ŭ ḥasyo sәmle Mor Gawriʔel, mәḷḷe ‘G̊sāmne hno dax+xәtyā̀r’, ŭ sәmle odák̇atste. Ŭ lule lḥa+insā̀n, azzé mzabnile laz+zangī́n, dәzzə́n yәtwi tamo, duxli ŭ šotәn ŭ mkayfi. B Aloho lo me kohnuṯo... u+yawmawo ḥasyo Ilyas mәḷḷe ‘Lә+fāš lo faṭәryarxe, lo ḥasye, lo qaše, lo dayroye ǧġer mu+kalla’. Bu+talavezyòn qrele rast, omaṇṇo ‘Howeno greʕux’.  ",
  "sentences": [
   {
@@ -457,9 +457,9 @@
      "normalized": "lo+kohnuṯo",
      "confidence": "LOW",
      "tier": null,
-     "lemma": null,
-     "lemma_id": null,
-     "lexical_gloss": null,
+     "lemma": "kohnuṯo",
+     "lemma_id": "liftlex_cc28cca01a980c34",
+     "lexical_gloss": "priest.work",
      "uncertainty": [
       "no corpus analysis found"
      ],
@@ -481,14 +481,26 @@
        "morph_id": "morph_ad70d831653d98d3",
        "sep": "+",
        "form": "kohnuṯo",
-       "gloss": "",
+       "gloss": "priest.work",
        "suggested": "",
-       "status": "unresolved",
+       "status": "confident",
        "origin": "user",
-       "alternatives": []
+       "alternatives": [],
+       "lexeme_id": "liftlex_cc28cca01a980c34",
+       "lemma": "kohnuṯo",
+       "grammatical_info": "Noun",
+       "lift_entry_id": "kohnuṯo_dc765364-99c9-495b-b0fc-35f0465f637a",
+       "lift_sense_id": "db61c925-48dd-4afe-8625-a86413c0e9e9"
       }
      ],
-     "dictionary": null
+     "dictionary": null,
+     "grammatical_infos": [
+      "Noun"
+     ],
+     "grammatical_info": "Noun",
+     "lift_entry_id": "kohnuṯo_dc765364-99c9-495b-b0fc-35f0465f637a",
+     "lift_guid": "dc765364-99c9-495b-b0fc-35f0465f637a",
+     "lift_sense_id": "db61c925-48dd-4afe-8625-a86413c0e9e9"
     },
     {
      "token_id": "etok_d9369acff6026123",
@@ -2549,7 +2561,7 @@
      "lexical_gloss": "priest.work",
      "uncertainty": [],
      "alternatives": [],
-     "locked": false,
+     "locked": true,
      "auto_pending": null,
      "morphemes": [
       {
@@ -2559,7 +2571,7 @@
        "gloss": "priest.work",
        "suggested": "",
        "status": "confident",
-       "origin": "auto",
+       "origin": "user",
        "alternatives": [],
        "lexeme_id": "liftlex_cc28cca01a980c34",
        "lemma": "kohnuṯo",
